@@ -104,12 +104,12 @@
                     <div class="icon-title"><span style="font-size:20px">🗃️</span> DATADIK</div>
                     <span>➔</span>
                 </button>
-                <button class="inj-menu-btn" id="btn-view-link">
-                    <div class="icon-title"><span style="font-size:20px">🔗</span> LINK Pendidikan</div>
+                <button class="inj-menu-btn" id="btn-view-bkn">
+                    <div class="icon-title"><span style="font-size:20px">🏛️</span> BKN / SIASN</div>
                     <span>➔</span>
                 </button>
-                <button class="inj-menu-btn" id="btn-view-bkn">
-                    <div class="icon-title"><span style="font-size:20px">🏛️</span> BKN</div>
+                <button class="inj-menu-btn" id="btn-view-link">
+                    <div class="icon-title"><span style="font-size:20px">🔗</span> LINK Pendidikan</div>
                     <span>➔</span>
                 </button>
             </div>
@@ -141,6 +141,16 @@
                     <button class="inj-action-btn btn-datadik-special" id="btn-input-pd">📝 Input PD Baru</button>
                 </div>
             </div>
+            
+            <div id="inj-view-bkn" style="display:none;">
+                <button class="inj-back-btn" id="btn-back-bkn">🔙 Kembali ke Utama</button>
+                <div style="border-top:1px solid #eee; padding-top:15px;">
+                    <button class="inj-action-btn btn-bkn-special" id="btn-auto-bkn">🚀 Jalankan Auto-Login SIASN</button>
+                    <div style="margin-top:10px; font-size:11px; color:#666; text-align:center;">
+                        *Jalankan fitur ini di halaman SSO BKN (bkn.go.id)
+                    </div>
+                </div>
+            </div>
 
             <div id="inj-view-link" style="display:none;">
                 <button class="inj-back-btn" id="btn-back-link">🔙 Kembali ke Utama</button>
@@ -155,14 +165,7 @@
                     <a href="https://nisn.data.kemendikdasmen.go.id/" target="_blank" class="inj-action-btn btn-link-special">🌐 Cek NISN</a>
                     <a href="https://tka.kemendikdasmen.go.id/" target="_blank" class="inj-action-btn btn-link-special">🌐 TKA</a>
                     <a href="https://revit.kemendikdasmen.go.id/" target="_blank" class="inj-action-btn btn-link-special">🌐 Revit</a>
-                </div>
-            </div>
-            
-            <div id="inj-view-bkn" style="display:none;">
-                <button class="inj-back-btn" id="btn-back-bkn">🔙 Kembali ke Utama</button>
-                <div style="border-top:1px solid #eee; padding-top:15px;">
-                    <button class="inj-action-btn btn-bkn-special" id="btn-asn-digital">🚀 ASN Digital (Auto Login)</button>
-                    <a href="https://asndigital.bkn.go.id/" target="_blank" class="inj-action-btn btn-bkn-special">🌐 Situs ASN Digital BKN</a>
+                    <a href="https://asndigital.bkn.go.id/" target="_blank" class="inj-action-btn btn-link-special">🌐 ASN Digital</a>
                 </div>
             </div>
             
@@ -192,13 +195,13 @@
         document.getElementById('inj-view-main').style.display = 'none';
         document.getElementById('inj-view-datadik').style.display = 'block';
     };
-    document.getElementById('btn-view-link').onclick = function() {
-        document.getElementById('inj-view-main').style.display = 'none';
-        document.getElementById('inj-view-link').style.display = 'block';
-    };
     document.getElementById('btn-view-bkn').onclick = function() {
         document.getElementById('inj-view-main').style.display = 'none';
         document.getElementById('inj-view-bkn').style.display = 'block';
+    };
+    document.getElementById('btn-view-link').onclick = function() {
+        document.getElementById('inj-view-main').style.display = 'none';
+        document.getElementById('inj-view-link').style.display = 'block';
     };
 
     document.getElementById('btn-back-dapodik').onclick = function() {
@@ -213,12 +216,12 @@
         document.getElementById('inj-view-datadik').style.display = 'none';
         document.getElementById('inj-view-main').style.display = 'block';
     };
-    document.getElementById('btn-back-link').onclick = function() {
-        document.getElementById('inj-view-link').style.display = 'none';
-        document.getElementById('inj-view-main').style.display = 'block';
-    };
     document.getElementById('btn-back-bkn').onclick = function() {
         document.getElementById('inj-view-bkn').style.display = 'none';
+        document.getElementById('inj-view-main').style.display = 'block';
+    };
+    document.getElementById('btn-back-link').onclick = function() {
+        document.getElementById('inj-view-link').style.display = 'none';
         document.getElementById('inj-view-main').style.display = 'block';
     };
 
@@ -263,6 +266,7 @@
             if(typeof Xond !== 'undefined') Xond.msg("Info", "Select field input sudah aktif");
         } catch(e) {}
     };
+    
     document.getElementById('btn-hapus-over').onclick = function() {
         try {
             document.querySelectorAll("input").forEach(el => el.style.pointerEvents = 'all');
@@ -440,13 +444,252 @@
     };
 
     document.getElementById('btn-input-pd').onclick = function() {
-        var inputPDScript = "javascript:(function()%7B(async()%3D%3E%7Bif(%22undefined%22%3D%3Dtypeof%20XLSX)%7Bawait%20new%20Promise(e%3D%3E%7Bconst%20t%3Ddocument.createElement(%22script%22)%3Bt.src%3D%22https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fxlsx%2Fdist%2Fxlsx.full.min.js%22%2Ct.onload%3De%2Cdocument.head.appendChild(t)%7D)%7Ddocument.getElementById(%22excelPanel%22)%3F.remove()%3Bconst%20e%3Ddocument.createElement(%22div%22)%3Be.id%3D%22excelPanel%22%2Ce.style.cssText%3D%22box-sizing%3Aborder-box%3Bposition%3Afixed%3Btop%3A100px%3Bright%3A30px%3Bwidth%3A25em%3Bbackground%3A%23fff%3Bbox-shadow%3Argba(99%2C99%2C99%2C0.2)%200px%202px%208px%200px%3Bz-index%3A999999999%3Boverflow%3Ahidden%3Bfont-size%3A15px%22%3Bconst%20t%3Ddocument.createElement(%22div%22)%3Bt.style.cssText%3D%22display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bpadding%3A5px%2010px%3Bcursor%3Amove%3Buser-select%3Anone%22%2Cn%3Ddocument.createElement(%22span%22)%3Bn.textContent%3D%22Input%22%3Bconst%20o%3Ddocument.createElement(%22button%22)%3Bo.textContent%3D%22%E2%9C%95%22%2Co.style.cssText%3D%22border%3Anone%3Bbackground%3A0%200%3Bcursor%3Apointer%22%2Co.onclick%3D()%3D%3E%7Be.remove()%2Cl.remove()%7D%2Ct.appendChild(n)%2Ct.appendChild(o)%3Bconst%20s%3Ddocument.createElement(%22div%22)%3Bs.style.padding%3D%2210px%22%3Bconst%20a%3Ddocument.createElement(%22button%22)%3Ba.textContent%3D%22Import%20Excel%22%2Ca.style.cssText%3D%22width%3A100%25%3Bpadding%3A8px%3Bborder%3Anone%3Bborder-radius%3A5px%3Bbackground%3A%230a84ff%3Bcolor%3A%23fff%3Bcursor%3Apointer%3Bmargin-bottom%3A10px%22%2Ca.onclick%3D()%3D%3E%7Bl.value%3D%22%22%2Cl.click()%7D%3Bconst%20c%3Ddocument.createElement(%22select%22)%3Bc.id%3D%22excelHeader%22%2Cc.style.cssText%3D%22width%3A100%25%3Bpadding%3A8px%3Bline-height%3Anormal%3Bheight%3Ainherit%22%3Bconst%20r%3Ddocument.createElement(%22input%22)%3Br.type%3D%22text%22%2Cr.placeholder%3D%22Selector%20(id%2C%20name%2C%20class%2C%20dll)%22%2Cr.style.cssText%3D%22width%3A100%25%3Bpadding%3A8px%3Bmargin-bottom%3A10px%3Bborder%3A1px%20solid%22%2Cs.appendChild(a)%2Cs.appendChild(r)%2Cs.appendChild(c)%2Ce.appendChild(t)%2Ce.appendChild(s)%2Cdocument.body.appendChild(e)%3Blet%20d%3D!1%2Ci%3D0%2Cp%3D0%3Bt.addEventListener(%22mousedown%22%2Ct%3D%3E%7Bd%3D!0%2Ce.style.left%3De.offsetLeft%2B%22px%22%2Ce.style.top%3De.offsetTop%2B%22px%22%2Ce.style.right%3D%22auto%22%2Ci%3Dt.clientX-e.offsetLeft%2Cp%3Dt.clientY-e.offsetTop%7D)%2Cdocument.addEventListener(%22mousemove%22%2Ct%3D%3E%7Bd%26%26(e.style.left%3Dt.clientX-i%2B%22px%22%2Ce.style.top%3Dt.clientY-p%2B%22px%22)%7D)%2Cdocument.addEventListener(%22mouseup%22%2C()%3D%3E%7Bd%3D!1%7D)%3Bconst%20l%3Ddocument.createElement(%22input%22)%3Bl.type%3D%22file%22%2Cl.accept%3D%22.xlsx%2C%20.xls%22%2Cl.style.display%3D%22none%22%2Cdocument.body.appendChild(l)%2Cl.onchange%3Dfunction()%7Bconst%20e%3Dthis.files%5B0%5D%3Bif(!e)return%3Bconst%20t%3Dnew%20FileReader%3Bt.onload%3Dfunction(e)%7Bconst%20t%3DXLSX.read(e.target.result%2C%7Btype%3A%22array%22%7D)%2Cn%3Dt.Sheets%5Bt.SheetNames%5B0%5D%5D%2Co%3DXLSX.utils.sheet_to_json(n%2C%7Bheader%3A1%2Cdefval%3A%22%22%7D)%3Bif(!o.length)return%3Bconst%20s%3Do%5B0%5D.map(e%3D%3EString(e).trim().replace(%2F%5Cs%2B%2Fg%2C%22_%22))%2Ca%3Do.slice(1).filter(e%3D%3Ee.some(e%3D%3E%22%22!%3D%3DString(e%3F%3F%22%22).trim()))%3Bc.innerHTML%3D%22%22%3Bconst%20r%3Ddocument.createElement(%22option%22)%3Br.value%3D%22%22%2Cr.textContent%3D%22--%20Pilih%20data%20--%22%2Cr.selected%3D!0%2Cr.disabled%3D!0%2Cc.appendChild(r)%2Ca.forEach((e%2Ct)%3D%3E%7Bconst%20n%3Ddocument.createElement(%22option%22)%3Bn.value%3Dt%2B1%2Cn.textContent%3De%5B0%5D%7C%7C%60Baris%20%24%7Bt%2B1%7D%60%2Cs.forEach((t%2Co)%3D%3E%7Bn.dataset%5Bt%5D%3De%5Bo%5D%3F%3F%22%22%7D)%2Cc.appendChild(n)%7D)%2Cc.onchange%3Dfunction()%7Bconst%20e%3Dthis.selectedOptions%5B0%5D.dataset%2Ct%3Ddocument.getElementById(%22simpanPD%22)%3BObject.keys(e).forEach(t%3D%3E%7Bconst%20n%3Dr.value.trim()%7C%7C%22name%22%2Co%3D%22class%22%3D%3D%3Dn%3Fdocument.querySelector(%60.%24%7Bt%7D%60)%3A%22id%22%3D%3D%3Dn%3Fdocument.querySelector(%60%23%24%7Bt%7D%60)%3Adocument.querySelector(%60%5B%24%7Bn%7D%3D%22%24%7Bt%7D%22%5D%60)%3Bif(!o)return%3Bconst%20s%3DString(e%5Bt%5D).trim()%3Bif(%22SELECT%22%3D%3D%3Do.tagName)%7Bo.removeAttribute(%22onchange%22)%2Co.onchange%3Dnull%3Blet%20e%3D%5B...o.options%5D.find(e%3D%3Ee.textContent.trim().toLowerCase()%3D%3D%3Ds.toLowerCase()%7C%7CString(e.value).trim()%3D%3D%3Ds)%3Be%7C%7C(e%3Dnew%20Option(s%2Cs)%2Co.add(e))%2Co.value%3De.value%2Cwindow.jQuery%26%26jQuery(o).hasClass(%22select2-hidden-accessible%22)%26%26jQuery(o).trigger(%22change.select2%22)%7Delse%20o.value%3Ds%3Bo.dispatchEvent(new%20Event(%22input%22%2C%7Bbubbles%3A!0%7D))%2Co.dispatchEvent(new%20Event(%22change%22%2C%7Bbubbles%3A!0%7D))%7D)%2Ct%26%26(t.style.display%3D%22block%22)%7D%2Cc.options.length%26%26(c.selectedIndex%3D0%2Cc.dispatchEvent(new%20Event(%22change%22)))%7D%2Ct.readAsArrayBuffer(e)%7D%7D)()})();";
+        var inputPDScript = "javascript:(function()%7B(async()%3D%3E%7Bif(%22undefined%22%3D%3Dtypeof%20XLSX)%7Bawait%20new%20Promise(e%3D%3E%7Bconst%20t%3Ddocument.createElement(%22script%22)%3Bt.src%3D%22https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fxlsx%2Fdist%2Fxlsx.full.min.js%22%2Ct.onload%3De%2Cdocument.head.appendChild(t)%7D)%7Ddocument.getElementById(%22excelPanel%22)%3F.remove()%3Bconst%20e%3Ddocument.createElement(%22div%22)%3Be.id%3D%22excelPanel%22%2Ce.style.cssText%3D%22box-sizing%3Aborder-box%3Bposition%3Afixed%3Btop%3A100px%3Bright%3A30px%3Bwidth%3A25em%3Bbackground%3A%23fff%3Bbox-shadow%3Argba(99%2C99%2C99%2C0.2)%200px%202px%208px%200px%3Bz-index%3A999999999%3Boverflow%3Ahidden%3Bfont-size%3A15px%22%3Bconst%20t%3Ddocument.createElement(%22div%22)%3Bt.style.cssText%3D%22display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bpadding%3A5px%2010px%3Bcursor%3Amove%3Buser-select%3Anone%22%2Cn%3Ddocument.createElement(%22span%22)%3Bn.textContent%3D%22Input%22%3Bconst%20o%3Ddocument.createElement(%22button%22)%3Bo.textContent%3D%22%E2%9C%95%22%2Co.style.cssText%3D%22border%3Anone%3Bbackground%3A0%200%3Bcursor%3Apointer%22%2Co.onclick%3D()%3D%3E%7Be.remove()%2Cl.remove()%7D%2Ct.appendChild(n)%2Ct.appendChild(o)%3Bconst%20s%3Ddocument.createElement(%22div%22)%3Bs.style.padding%3D%2210px%3Bconst%20a%3Ddocument.createElement(%22button%22)%3Ba.textContent%3D%22Import%20Excel%22%2Ca.style.cssText%3D%22width%3A100%25%3Bpadding%3A8px%3Bborder%3Anone%3Bborder-radius%3A5px%3Bbackground%3A%230a84ff%3Bcolor%3A%23fff%3Bcursor%3Apointer%3Bmargin-bottom%3A10px%22%2Ca.onclick%3D()%3D%3E%7Bl.value%3D%22%22%2Cl.click()%7D%3Bconst%20c%3Ddocument.createElement(%22select%22)%3Bc.id%3D%22excelHeader%22%2Cc.style.cssText%3D%22width%3A100%25%3Bpadding%3A8px%3Bline-height%3Anormal%3Bheight%3Ainherit%22%3Bconst%20r%3Ddocument.createElement(%22input%22)%3Br.type%3D%22text%22%2Cr.placeholder%3D%22Selector%20(id%2C%20name%2C%20class%2C%20dll)%22%2Cr.style.cssText%3D%22width%3A100%25%3Bpadding%3A8px%3Bmargin-bottom%3A10px%3Bborder%3A1px%20solid%22%2Cs.appendChild(a)%2Cs.appendChild(r)%2Cs.appendChild(c)%2Ce.appendChild(t)%2Ce.appendChild(s)%2Cdocument.body.appendChild(e)%3Blet%20d%3D!1%2Ci%3D0%2Cp%3D0%3Bt.addEventListener(%22mousedown%22%2Ct%3D%3E%7Bd%3D!0%2Ce.style.left%3De.offsetLeft%2B%22px%22%2Ce.style.top%3De.offsetTop%2B%22px%22%2Ce.style.right%3D%22auto%22%2Ci%3Dt.clientX-e.offsetLeft%2Cp%3Dt.clientY-e.offsetTop%7D)%2Cdocument.addEventListener(%22mousemove%22%2Ct%3D%3E%7Bd%26%26(e.style.left%3Dt.clientX-i%2B%22px%22%2Ce.style.top%3Dt.clientY-p%2B%22px%22)%7D)%2Cdocument.addEventListener(%22mouseup%22%2C()%3D%3E%7Bd%3D!1%7D)%3Bconst%20l%3Ddocument.createElement(%22input%22)%3Bl.type%3D%22file%22%2Cl.accept%3D%22.xlsx%2C%20.xls%22%2Cl.style.display%3D%22none%22%2Cdocument.body.appendChild(l)%2Cl.onchange%3Dfunction()%7Bconst%20e%3Dthis.files%5B0%5D%3Bif(!e)return%3Bconst%20t%3Dnew%20FileReader%3Bt.onload%3Dfunction(e)%7Bconst%20t%3DXLSX.read(e.target.result%2C%7Btype%3A%22array%22%7D)%2Cn%3Dt.Sheets%5Bt.SheetNames%5B0%5D%5D%2Co%3DXLSX.utils.sheet_to_json(n%2C%7Bheader%3A1%2Cdefval%3A%22%22%7D)%3Bif(!o.length)return%3Bconst%20s%3Do%5B0%5D.map(e%3D%3EString(e).trim().replace(%2F%5Cs%2B%2Fg%2C%22_%22))%2Ca%3Do.slice(1).filter(e%3D%3Ee.some(e%3D%3E%22%22!%3D%3DString(e%3F%3F%22%22).trim()))%3Bc.innerHTML%3D%22%22%3Bconst%20r%3Ddocument.createElement(%22option%22)%3Br.value%3D%22%22%2Cr.textContent%3D%22--%20Pilih%20data%20--%22%2Cr.selected%3D!0%2Cr.disabled%3D!0%2Cc.appendChild(r)%2Ca.forEach((e%2Ct)%3D%3E%7Bconst%20n%3Ddocument.createElement(%22option%22)%3Bn.value%3Dt%2B1%2Cn.textContent%3De%5B0%5D%7C%7C%60Baris%20%24%7Bt%2B1%7D%60%2Cs.forEach((t%2Co)%3D%3E%7Bn.dataset%5Bt%5D%3De%5Bo%5D%3F%3F%22%22%7D)%2Cc.appendChild(n)%7D)%2Cc.onchange%3Dfunction()%7Bconst%20e%3Dthis.selectedOptions%5B0%5D.dataset%2Ct%3Ddocument.getElementById(%22simpanPD%22)%3BObject.keys(e).forEach(t%3D%3E%7Bconst%20n%3Dr.value.trim()%7C%7C%22name%22%2Co%3D%22class%22%3D%3D%3Dn%3Fdocument.querySelector(%60.%24%7Bt%7D%60)%3A%22id%22%3D%3D%3Dn%3Fdocument.querySelector(%60%23%24%7Bt%7D%60)%3Adocument.querySelector(%60%5B%24%7Bn%7D%3D%22%24%7Bt%7D%22%5D%60)%3Bif(!o)return%3Bconst%20s%3DString(e%5Bt%5D).trim()%3Bif(%22SELECT%22%3D%3D%3Do.tagName)%7Bo.removeAttribute(%22onchange%22)%2Co.onchange%3Dnull%3Blet%20e%3D%5B...o.options%5D.find(e%3D%3Ee.textContent.trim().toLowerCase()%3D%3D%3Ds.toLowerCase()%7C%7CString(e.value).trim()%3D%3D%3Ds)%3Be%7C%7C(e%3Dnew%20Option(s%2Cs)%2Co.add(e))%2Co.value%3De.value%2Cwindow.jQuery%26%26jQuery(o).hasClass(%22select2-hidden-accessible%22)%26%26jQuery(o).trigger(%22change.select2%22)%7Delse%20o.value%3Ds%3Bo.dispatchEvent(new%20Event(%22input%22%2C%7Bbubbles%3A!0%7D))%2Co.dispatchEvent(new%20Event(%22change%22%2C%7Bbubbles%3A!0%7D))%7D)%2Ct%26%26(t.style.display%3D%22block%22)%7D%2Cc.options.length%26%26(c.selectedIndex%3D0%2Cc.dispatchEvent(new%20Event(%22change%22)))%7D%2Ct.readAsArrayBuffer(e)%7D%7D)()})();";
         location.href = inputPDScript;
     };
-    
-    document.getElementById('btn-asn-digital').onclick = function() {
-        var asnScript = `javascript:(function(){const _0x1="https://docs.google.com/spreadsheets/d/e/2PACX-1vR7HiwxSR1ks5OJNDv0OLbJwkdC2mu285TecsMCALPB_8NkSQfraDATxXJid9NnAuCpkyehcLAD9vHd/pub?gid=0&single=true&output=csv";function _0x2(_0x3,_0x4=5000){return new Promise((_0x5,_0x6)=>{if(document.querySelector(_0x3))return _0x5(document.querySelector(_0x3));const _0x7=new MutationObserver(()=>{if(document.querySelector(_0x3)){_0x7.disconnect();_0x5(document.querySelector(_0x3));}});_0x7.observe(document.body,{childList:!0,subtree:!0});setTimeout(()=>{_0x7.disconnect();_0x6(new Error());},_0x4);});}function _0x8(){const _0x9=document.querySelectorAll("span");for(let _0xa of _0x9){if(_0xa.textContent.trim().toLowerCase()==="login"){const _0xb=_0xa.closest("div.text-center.flex.flex-col");if(_0xb)return _0xb;}}return null;}async function _0xc(_0xd){const _0xe="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";let _0xf="";for(let _0x10=0;_0x10<_0xd.length;_0x10++){const _0x11=_0xd.charAt(_0x10).toUpperCase();if(_0x11==="="||_0x11===" ")continue;const _0x12=_0xe.indexOf(_0x11);if(_0x12===-1)throw new Error();_0xf+=_0x12.toString(2).padStart(5,"0");}const _0x13=new Uint8Array(Math.floor(_0xf.length/8));for(let _0x14=0;_0x14<_0x13.length;_0x14++){_0x13[_0x14]=parseInt(_0xf.substr(_0x14*8,8),2);}const _0x15=await crypto.subtle.importKey("raw",_0x13,{name:"HMAC",hash:"SHA-1"},!1,["sign"]);const _0x16=Math.floor(Date.now()/30000);const _0x17=new ArrayBuffer(8);new DataView(_0x17).setUint32(4,_0x16,!1);const _0x18=await crypto.subtle.sign("HMAC",_0x15,_0x17);const _0x19=new Uint8Array(_0x18);const _0x1a=_0x19[_0x19.length-1]&0xf;const _0x1b=((_0x19[_0x1a]&0x7f)<<24)|((_0x19[_0x1a+1]&0xff)<<16)|((_0x19[_0x1a+2]&0xff)<<8)|(_0x19[_0x1a+3]&0xff);return(_0x1b%1000000).toString().padStart(6,"0");}function _0x1c(_0x1d){const _0x1e=_0x1d.split("\\n"),_0x1f=[];for(let _0x20=0;_0x20<_0x1e.length;_0x20++){if(_0x1e[_0x20].trim()==="")continue;const _0x21=_0x1e[_0x20].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);if(_0x21.length>=2){const _0x22=_0x21[0]?_0x21[0].trim().replace(/^"|"$/g,""):"";const _0x23=_0x21[1]?_0x21[1].trim().replace(/^"|"$/g,""):"";const _0x24=_0x21[2]?_0x21[2].trim().replace(/^"|"$/g,""):"";const _0x25=_0x21[3]?_0x21[3].trim().replace(/^"|"$/g,""):"";_0x1f.push({nama:_0x22,nip:_0x23,password:_0x24,secret:_0x25});}}return _0x1f;}function _0x26(_0x27,_0x28,_0x29){const _0x2a=document.createElement("div");_0x2a.style.marginBottom="20px";const _0x2b=document.createElement("label");_0x2b.innerText="Pilih Nama Pegawai:";_0x2b.style.display="block";_0x2b.style.marginBottom="5px";_0x2b.style.fontWeight="bold";_0x2b.style.color="#0056b3";const _0x2c=document.createElement("select");_0x2c.style.width="100%";_0x2c.style.padding="8px";_0x2c.style.border="1px solid #ccc";_0x2c.style.borderRadius="4px";_0x2c.style.backgroundColor="#f0f8ff";_0x2c.style.fontSize="14px";const _0x2d=document.createElement("option");_0x2d.text="-- Silakan Pilih Nama --";_0x2d.value="";_0x2c.appendChild(_0x2d);_0x27.forEach(_0x2e=>{const _0x2f=document.createElement("option");_0x2f.value=_0x2e.nip||_0x2e.nama;_0x2f.text=!_0x2e.nip?_0x2e.nama+" (NIP Kosong)":_0x2e.nama;_0x2c.appendChild(_0x2f);});_0x2a.appendChild(_0x2b);_0x2a.appendChild(_0x2c);_0x28.parentNode.insertBefore(_0x2a,_0x28);_0x2c.addEventListener("change",function(_0x30){const _0x31=_0x30.target.value;const _0x32=_0x27.find(_0x33=>_0x33.nip===_0x31||_0x33.nama===_0x31);if(_0x32&&_0x32.nip){_0x28.value=_0x32.nip;_0x28.dispatchEvent(new Event("input",{bubbles:!0}));_0x28.dispatchEvent(new Event("change",{bubbles:!0}));if(_0x29&&_0x32.password){_0x29.value=_0x32.password;_0x29.dispatchEvent(new Event("input",{bubbles:!0}));_0x29.dispatchEvent(new Event("change",{bubbles:!0}));}const _0x34=document.getElementById("kc-login")||document.querySelector('input[type="submit"]')||document.querySelector('button[type="submit"]');if(_0x34){setTimeout(()=>{_0x34.click();},500);}}else{_0x28.value="";if(_0x29)_0x29.value="";}});}setInterval(async()=>{const _0x35=_0x8();const _0x36=document.getElementById("btn-login");const _0x37=document.getElementById("username");const _0x38=document.getElementById("otp")||document.getElementById("totp");const _0x39=document.getElementById("kc-attempted-username");if(_0x35&&!document.getElementById("f-pc")){const _0x3a=document.createElement("div");_0x3a.id="f-pc";document.body.appendChild(_0x3a);_0x35.click();}else if(_0x36&&!document.getElementById("f-bmc")){const _0x3b=document.createElement("div");_0x3b.id="f-bmc";document.body.appendChild(_0x3b);setTimeout(()=>{_0x36.click();},500);}else if(_0x37&&!document.getElementById("d-siasn")&&!document.getElementById("f-dl")){const _0x3c=document.createElement("div");_0x3c.id="f-dl";document.body.appendChild(_0x3c);setTimeout(async()=>{const _0x3d=document.createElement("div");_0x3d.id="d-siasn";document.body.appendChild(_0x3d);try{const _0x3e=await fetch(_0x1);if(!_0x3e.ok)throw new Error();const _0x3f=await _0x3e.text();const _0x40=_0x1c(_0x3f);_0x26(_0x40,_0x37,document.getElementById("password"));}catch(_0x41){}},5000);}else if((_0x38||_0x39)&&!document.getElementById("o-p")){const _0x42=document.createElement("div");_0x42.id="o-p";document.body.appendChild(_0x42);try{const _0x43=await _0x2("#kc-attempted-username");const _0x44=_0x43.innerText.trim();const _0x45=await fetch(_0x1);if(!_0x45.ok)throw new Error();const _0x46=await _0x45.text();const _0x47=_0x1c(_0x46);const _0x48=_0x47.find(_0x49=>_0x49.nip===_0x44);if(!_0x48||!_0x48.secret)throw new Error();const _0x4a=await _0xc(_0x48.secret);const _0x4b=await _0x2('#otp, #totp, input[autocomplete="one-time-code"]');const _0x4c=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,"value").set;_0x4c.call(_0x4b,_0x4a);_0x4b.dispatchEvent(new Event("input",{bubbles:!0}));_0x4b.dispatchEvent(new Event("change",{bubbles:!0}));const _0x4d=await _0x2('input[type="submit"], button[type="submit"], #kc-login');setTimeout(()=>{_0x4d.click();},500);}catch(_0x4e){}}},1000);})();`;
-        location.href = asnScript;
+
+    // ==========================================
+    // FUNGSI AUTO-LOGIN BKN / SIASN
+    // ==========================================
+    document.getElementById('btn-auto-bkn').onclick = function() {
+        if (!window.location.hostname.includes("bkn.go.id")) {
+            alert("Harap buka halaman web SSO BKN (bkn.go.id) terlebih dahulu untuk menjalankan skrip ini.");
+            return;
+        }
+
+        alert("Skrip Auto-Login SIASN BKN dijalankan!");
+
+        (async function() {
+            'use strict';
+
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7HiwxSR1ks5OJNDv0OLbJwkdC2mu285TecsMCALPB_8NkSQfraDATxXJid9NnAuCpkyehcLAD9vHd/pub?gid=0&single=true&output=csv';
+
+            function waitForElement(selector, timeout = 5000) {
+                return new Promise((resolve, reject) => {
+                    if (document.querySelector(selector)) return resolve(document.querySelector(selector));
+                    const observer = new MutationObserver(() => {
+                        if (document.querySelector(selector)) {
+                            observer.disconnect();
+                            resolve(document.querySelector(selector));
+                        }
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
+                    setTimeout(() => {
+                        observer.disconnect();
+                        reject(new Error(`Timeout: Elemen ${selector} tidak ditemukan.`));
+                    }, timeout);
+                });
+            }
+
+            function cariTombolLoginPortal() {
+                const spans = document.querySelectorAll('span');
+                for (let span of spans) {
+                    if (span.textContent.trim().toLowerCase() === 'login') {
+                        const parentDiv = span.closest('div.text-center.flex.flex-col');
+                        if (parentDiv) return parentDiv;
+                    }
+                }
+                return null;
+            }
+
+            async function generateNativeTOTP(secretBase32) {
+                const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+                let bits = '';
+                
+                for (let i = 0; i < secretBase32.length; i++) {
+                    const char = secretBase32.charAt(i).toUpperCase();
+                    if (char === '=' || char === ' ') continue;
+                    const val = base32chars.indexOf(char);
+                    if (val === -1) throw new Error("Format Secret Key tidak valid");
+                    bits += val.toString(2).padStart(5, '0');
+                }
+                
+                const keyArray = new Uint8Array(Math.floor(bits.length / 8));
+                for (let i = 0; i < keyArray.length; i++) {
+                    keyArray[i] = parseInt(bits.substr(i * 8, 8), 2);
+                }
+
+                const cryptoKey = await crypto.subtle.importKey('raw', keyArray, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+                const timeStep = Math.floor(Date.now() / 30000);
+                const timeBuffer = new ArrayBuffer(8);
+                new DataView(timeBuffer).setUint32(4, timeStep, false); 
+                
+                const signature = await crypto.subtle.sign('HMAC', cryptoKey, timeBuffer);
+                const hmac = new Uint8Array(signature);
+                
+                const offset = hmac[hmac.length - 1] & 0xf;
+                const code = ((hmac[offset] & 0x7f) << 24) | ((hmac[offset + 1] & 0xff) << 16) | ((hmac[offset + 2] & 0xff) << 8) | (hmac[offset + 3] & 0xff);
+                
+                return (code % 1000000).toString().padStart(6, '0');
+            }
+
+            function parseCSV(csvText) {
+                const lines = csvText.split('\n');
+                const result = [];
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+                    const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (row.length >= 2) {
+                        const nama = row[0] ? row[0].trim().replace(/^"|"$/g, '') : '';
+                        const nip = row[1] ? row[1].trim().replace(/^"|"$/g, '') : '';
+                        const password = row[2] ? row[2].trim().replace(/^"|"$/g, '') : '';
+                        const secret = row[3] ? row[3].trim().replace(/^"|"$/g, '') : ''; 
+                        result.push({ nama, nip, password, secret });
+                    }
+                }
+                return result;
+            }
+
+            setInterval(async () => {
+                const btnPortalLogin = cariTombolLoginPortal();
+                const btnMasuk = document.getElementById('btn-login');
+                const usernameInput = document.getElementById('username');
+                const otpInput = document.getElementById('otp') || document.getElementById('totp');
+                const nipDisplay = document.getElementById('kc-attempted-username');
+
+                if (btnPortalLogin && !document.getElementById('flag-portal-clicked')) {
+                    const flag = document.createElement('div');
+                    flag.id = 'flag-portal-clicked';
+                    document.body.appendChild(flag);
+                    console.log("Menemukan ikon Login. Mengklik...");
+                    btnPortalLogin.click();
+                }
+                else if (btnMasuk && !document.getElementById('flag-btn-masuk-clicked')) {
+                    const flag = document.createElement('div');
+                    flag.id = 'flag-btn-masuk-clicked';
+                    document.body.appendChild(flag);
+                    console.log("Menemukan tombol Masuk (#btn-login). Mengklik...");
+                    setTimeout(() => {
+                        btnMasuk.click();
+                    }, 500);
+                }
+                else if (usernameInput && !document.getElementById('dropdown-siasn') && !document.getElementById('flag-delay-login')) {
+                    const flagDelay = document.createElement('div');
+                    flagDelay.id = 'flag-delay-login';
+                    document.body.appendChild(flagDelay);
+                    console.log("Halaman SSO Login terbuka. Menunggu 5 detik sebelum memuat data...");
+                    
+                    setTimeout(async () => {
+                        const flagDropdown = document.createElement('div');
+                        flagDropdown.id = 'dropdown-siasn';
+                        document.body.appendChild(flagDropdown);
+                        
+                        try {
+                            const response = await fetch(csvUrl);
+                            if (!response.ok) throw new Error("Gagal membaca Google Sheets CSV");
+                            const csvData = await response.text();
+                            const dataPegawai = parseCSV(csvData);
+                            
+                            buatDropdown(dataPegawai, usernameInput, document.getElementById('password'));
+                            console.log("Data berhasil dimuat setelah delay 5 detik.");
+                        } catch (error) {
+                            console.error("Gagal memuat Halaman 1:", error);
+                        }
+                    }, 5000); 
+                } 
+                else if ((otpInput || nipDisplay) && !document.getElementById('otp-processed')) {
+                    const flag = document.createElement('div');
+                    flag.id = 'otp-processed';
+                    document.body.appendChild(flag);
+                    console.log("Halaman OTP terdeteksi. Menjalankan skrip Native TOTP...");
+
+                    try {
+                        const nipElement = await waitForElement('#kc-attempted-username');
+                        const nip = nipElement.innerText.trim();
+                        
+                        const response = await fetch(csvUrl);
+                        if (!response.ok) throw new Error("Gagal membaca CSV");
+                        const csvData = await response.text();
+                        const dataPegawai = parseCSV(csvData);
+                        
+                        const pegawaiTerpilih = dataPegawai.find(p => p.nip === nip);
+                        if (!pegawaiTerpilih || !pegawaiTerpilih.secret) {
+                            throw new Error("Secret Key tidak ditemukan.");
+                        }
+
+                        const otpCode = await generateNativeTOTP(pegawaiTerpilih.secret);
+                        const targetOtpInput = await waitForElement('#otp, #totp, input[autocomplete="one-time-code"]');
+                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+                        nativeInputValueSetter.call(targetOtpInput, otpCode);
+                        
+                        targetOtpInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        targetOtpInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                        const submitBtn = await waitForElement('input[type="submit"], button[type="submit"], #kc-login');
+                        setTimeout(() => {
+                            submitBtn.click();
+                        }, 500);
+
+                    } catch (error) {
+                        console.error("Sistem Otomatisasi OTP Terhenti:", error.message);
+                    }
+                }
+            }, 1000); 
+
+            function buatDropdown(dataPegawai, usernameInput, passwordInput) {
+                const selectContainer = document.createElement('div');
+                selectContainer.style.marginBottom = '20px'; 
+
+                const selectLabel = document.createElement('label');
+                selectLabel.innerText = 'Pilih Nama Pegawai (Login & OTP Otomatis 100%):';
+                selectLabel.style.display = 'block';
+                selectLabel.style.marginBottom = '5px';
+                selectLabel.style.fontWeight = 'bold';
+                selectLabel.style.color = '#0056b3';
+
+                const selectElement = document.createElement('select');
+                selectElement.style.width = '100%';
+                selectElement.style.padding = '8px';
+                selectElement.style.border = '1px solid #ccc';
+                selectElement.style.borderRadius = '4px';
+                selectElement.style.backgroundColor = '#f0f8ff';
+                selectElement.style.fontSize = '14px';
+
+                const defaultOption = document.createElement('option');
+                defaultOption.text = '-- Silakan Pilih Nama --';
+                defaultOption.value = '';
+                selectElement.appendChild(defaultOption);
+
+                dataPegawai.forEach(pegawai => {
+                    const option = document.createElement('option');
+                    option.value = pegawai.nip || pegawai.nama; 
+                    option.text = !pegawai.nip ? pegawai.nama + " (NIP Kosong)" : pegawai.nama;
+                    selectElement.appendChild(option);
+                });
+
+                selectContainer.appendChild(selectLabel);
+                selectContainer.appendChild(selectElement);
+                usernameInput.parentNode.insertBefore(selectContainer, usernameInput);
+
+                selectElement.addEventListener('change', function(e) {
+                    const selectedValue = e.target.value;
+                    const dataTerpilih = dataPegawai.find(p => p.nip === selectedValue || p.nama === selectedValue);
+                    
+                    if (dataTerpilih && dataTerpilih.nip) {
+                        usernameInput.value = dataTerpilih.nip;
+                        usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                        if (passwordInput && dataTerpilih.password) {
+                            passwordInput.value = dataTerpilih.password;
+                            passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                        
+                        const submitBtn = document.getElementById('kc-login') || document.querySelector('input[type="submit"]') || document.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            setTimeout(() => {
+                                submitBtn.click();
+                            }, 500); 
+                        }
+
+                    } else {
+                        usernameInput.value = '';
+                        if (passwordInput) passwordInput.value = '';
+                    }
+                });
+            }
+        })();
     };
 
 })();
