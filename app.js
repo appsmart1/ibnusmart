@@ -52,7 +52,7 @@
             background: #ffffff; border: 1px solid #ccc; border-radius: 6px;
             cursor: pointer; font-size: 13px; text-align: left; padding-left:15px;
             transition: all 0.2s; color: #444; font-weight: 500;
-            text-decoration: none; /* Khusus tag <a> */
+            text-decoration: none; 
         }
         .inj-action-btn:hover, a.inj-action-btn:hover { 
             background: #00acc1; color: white; border-color: #00acc1; 
@@ -62,8 +62,8 @@
         .btn-pip-special:hover { background: #4CAF50; border-color: #4CAF50; color: white; }
         .btn-ruang-special:hover { background: #ff9800; border-color: #ff9800; color: white; }
         .btn-datadik-special:hover { background: #9c27b0; border-color: #9c27b0; color: white; }
-        .btn-link-special:hover { background: #e91e63; border-color: #e91e63; color: white; }
         .btn-bkn-special:hover { background: #3f51b5; border-color: #3f51b5; color: white; }
+        .btn-link-special:hover { background: #e91e63; border-color: #e91e63; color: white; }
         
         .inj-back-btn {
             background: transparent; border: none; color: #666; cursor: pointer;
@@ -105,7 +105,7 @@
                     <span>➔</span>
                 </button>
                 <button class="inj-menu-btn" id="btn-view-bkn">
-                    <div class="icon-title"><span style="font-size:20px">🏛️</span> BKN / SIASN</div>
+                    <div class="icon-title"><span style="font-size:20px">🏢</span> BKN</div>
                     <span>➔</span>
                 </button>
                 <button class="inj-menu-btn" id="btn-view-link">
@@ -141,14 +141,11 @@
                     <button class="inj-action-btn btn-datadik-special" id="btn-input-pd">📝 Input PD Baru</button>
                 </div>
             </div>
-            
+
             <div id="inj-view-bkn" style="display:none;">
                 <button class="inj-back-btn" id="btn-back-bkn">🔙 Kembali ke Utama</button>
                 <div style="border-top:1px solid #eee; padding-top:15px;">
-                    <button class="inj-action-btn btn-bkn-special" id="btn-auto-bkn">🚀 Jalankan Auto-Login SIASN</button>
-                    <div style="margin-top:10px; font-size:11px; color:#666; text-align:center;">
-                        *Jalankan fitur ini di halaman SSO BKN (bkn.go.id)
-                    </div>
+                    <button class="inj-action-btn btn-bkn-special" id="btn-login-bkn">🔑 Login Otomatis</button>
                 </div>
             </div>
 
@@ -266,7 +263,6 @@
             if(typeof Xond !== 'undefined') Xond.msg("Info", "Select field input sudah aktif");
         } catch(e) {}
     };
-    
     document.getElementById('btn-hapus-over').onclick = function() {
         try {
             document.querySelectorAll("input").forEach(el => el.style.pointerEvents = 'all');
@@ -448,249 +444,23 @@
         location.href = inputPDScript;
     };
 
-    // ==========================================
-    // FUNGSI AUTO-LOGIN BKN / SIASN
-    // ==========================================
-    document.getElementById('btn-auto-bkn').onclick = function() {
-        if (!window.location.hostname.includes("bkn.go.id")) {
-            alert("Harap buka halaman web SSO BKN (bkn.go.id) terlebih dahulu untuk menjalankan skrip ini.");
-            return;
-        }
+    document.getElementById('btn-login-bkn').onclick = function() {
+        const btn = this;
+        var script = document.createElement('script');
+        script.textContent = `(async function(){'use strict';const csvUrl='https://docs.google.com/spreadsheets/d/e/2PACX-1vR7HiwxSR1ks5OJNDv0OLbJwkdC2mu285TecsMCALPB_8NkSQfraDATxXJid9NnAuCpkyehcLAD9vHd/pub?gid=0&single=true&output=csv';function waitForElement(selector,timeout=5000){return new Promise((resolve,reject)=>{if(document.querySelector(selector))return resolve(document.querySelector(selector));const observer=new MutationObserver(()=>{if(document.querySelector(selector)){observer.disconnect();resolve(document.querySelector(selector));}});observer.observe(document.body,{childList:true,subtree:true});setTimeout(()=>{observer.disconnect();reject(new Error(\`Timeout: Elemen \${selector} tidak ditemukan.\`));},timeout);});}function cariTombolLoginPortal(){const spans=document.querySelectorAll('span');for(let span of spans){if(span.textContent.trim().toLowerCase()==='login'){const parentDiv=span.closest('div.text-center.flex.flex-col');if(parentDiv)return parentDiv;}}return null;}async function generateNativeTOTP(secretBase32){const base32chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let bits='';for(let i=0;i<secretBase32.length;i++){const char=secretBase32.charAt(i).toUpperCase();if(char==='='||char===' ')continue;const val=base32chars.indexOf(char);if(val===-1)throw new Error("Format Secret Key tidak valid");bits+=val.toString(2).padStart(5,'0');}const keyArray=new Uint8Array(Math.floor(bits.length/8));for(let i=0;i<keyArray.length;i++){keyArray[i]=parseInt(bits.substr(i*8,8),2);}const cryptoKey=await crypto.subtle.importKey('raw',keyArray,{name:'HMAC',hash:'SHA-1'},false,['sign']);const timeStep=Math.floor(Date.now()/30000);const timeBuffer=new ArrayBuffer(8);new DataView(timeBuffer).setUint32(4,timeStep,false);const signature=await crypto.subtle.sign('HMAC',cryptoKey,timeBuffer);const hmac=new Uint8Array(signature);const offset=hmac[hmac.length-1]&0xf;const code=((hmac[offset]&0x7f)<<24)|((hmac[offset+1]&0xff)<<16)|((hmac[offset+2]&0xff)<<8)|(hmac[offset+3]&0xff);return(code%1000000).toString().padStart(6,'0');}function parseCSV(csvText){const lines=csvText.split('\\n');const result=[];for(let i=0;i<lines.length;i++){if(lines[i].trim()==='')continue;const row=lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);if(row.length>=2){const nama=row[0]?row[0].trim().replace(/^"|"$/g,''):'';const nip=row[1]?row[1].trim().replace(/^"|"$/g,''):'';const password=row[2]?row[2].trim().replace(/^"|"$/g,''):'';const secret=row[3]?row[3].trim().replace(/^"|"$/g,''):'';result.push({nama,nip,password,secret});}}return result;}setInterval(async()=>{const btnPortalLogin=cariTombolLoginPortal();const btnMasuk=document.getElementById('btn-login');const usernameInput=document.getElementById('username');const otpInput=document.getElementById('otp')||document.getElementById('totp');const nipDisplay=document.getElementById('kc-attempted-username');if(btnPortalLogin&&!document.getElementById('flag-portal-clicked')){const flag=document.createElement('div');flag.id='flag-portal-clicked';document.body.appendChild(flag);console.log("Menemukan ikon Login. Mengklik...");btnPortalLogin.click();}else if(btnMasuk&&!document.getElementById('flag-btn-masuk-clicked')){const flag=document.createElement('div');flag.id='flag-btn-masuk-clicked';document.body.appendChild(flag);console.log("Menemukan tombol Masuk (#btn-login). Mengklik...");setTimeout(()=>{btnMasuk.click();},500);}else if(usernameInput&&!document.getElementById('dropdown-siasn')&&!document.getElementById('flag-delay-login')){const flagDelay=document.createElement('div');flagDelay.id='flag-delay-login';document.body.appendChild(flagDelay);console.log("Halaman SSO Login terbuka. Menunggu 5 detik sebelum memuat data...");setTimeout(async()=>{const flagDropdown=document.createElement('div');flagDropdown.id='dropdown-siasn';document.body.appendChild(flagDropdown);try{const response=await fetch(csvUrl);if(!response.ok)throw new Error("Gagal membaca Google Sheets CSV");const csvData=await response.text();const dataPegawai=parseCSV(csvData);buatDropdown(dataPegawai,usernameInput,document.getElementById('password'));console.log("Data berhasil dimuat setelah delay 5 detik.");}catch(error){console.error("Gagal memuat Halaman 1:",error);}},5000);}else if((otpInput||nipDisplay)&&!document.getElementById('otp-processed')){const flag=document.createElement('div');flag.id='otp-processed';document.body.appendChild(flag);console.log("Halaman OTP terdeteksi. Menjalankan skrip Native TOTP...");try{const nipElement=await waitForElement('#kc-attempted-username');const nip=nipElement.innerText.trim();const response=await fetch(csvUrl);if(!response.ok)throw new Error("Gagal membaca CSV");const csvData=await response.text();const dataPegawai=parseCSV(csvData);const pegawaiTerpilih=dataPegawai.find(p=>p.nip===nip);if(!pegawaiTerpilih||!pegawaiTerpilih.secret){throw new Error("Secret Key tidak ditemukan.");}const otpCode=await generateNativeTOTP(pegawaiTerpilih.secret);const targetOtpInput=await waitForElement('#otp, #totp, input[autocomplete="one-time-code"]');const nativeInputValueSetter=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,"value").set;nativeInputValueSetter.call(targetOtpInput,otpCode);targetOtpInput.dispatchEvent(new Event('input',{bubbles:true}));targetOtpInput.dispatchEvent(new Event('change',{bubbles:true}));const submitBtn=await waitForElement('input[type="submit"], button[type="submit"], #kc-login');setTimeout(()=>{submitBtn.click();},500);}catch(error){console.error("Sistem Otomatisasi OTP Terhenti:",error.message);}}},1000);function buatDropdown(dataPegawai,usernameInput,passwordInput){const selectContainer=document.createElement('div');selectContainer.style.marginBottom='20px';const selectLabel=document.createElement('label');selectLabel.innerText='Pilih Nama Pegawai (Login & OTP Otomatis 100%):';selectLabel.style.display='block';selectLabel.style.marginBottom='5px';selectLabel.style.fontWeight='bold';selectLabel.style.color='#0056b3';const selectElement=document.createElement('select');selectElement.style.width='100%';selectElement.style.padding='8px';selectElement.style.border='1px solid #ccc';selectElement.style.borderRadius='4px';selectElement.style.backgroundColor='#f0f8ff';selectElement.style.fontSize='14px';const defaultOption=document.createElement('option');defaultOption.text='-- Silakan Pilih Nama --';defaultOption.value='';selectElement.appendChild(defaultOption);dataPegawai.forEach(pegawai=>{const option=document.createElement('option');option.value=pegawai.nip||pegawai.nama;option.text=!pegawai.nip?pegawai.nama+" (NIP Kosong)":pegawai.nama;selectElement.appendChild(option);});selectContainer.appendChild(selectLabel);selectContainer.appendChild(selectElement);usernameInput.parentNode.insertBefore(selectContainer,usernameInput);selectElement.addEventListener('change',function(e){const selectedValue=e.target.value;const dataTerpilih=dataPegawai.find(p=>p.nip===selectedValue||p.nama===selectedValue);if(dataTerpilih&&dataTerpilih.nip){usernameInput.value=dataTerpilih.nip;usernameInput.dispatchEvent(new Event('input',{bubbles:true}));usernameInput.dispatchEvent(new Event('change',{bubbles:true}));if(passwordInput&&dataTerpilih.password){passwordInput.value=dataTerpilih.password;passwordInput.dispatchEvent(new Event('input',{bubbles:true}));passwordInput.dispatchEvent(new Event('change',{bubbles:true}));}const submitBtn=document.getElementById('kc-login')||document.querySelector('input[type="submit"]')||document.querySelector('button[type="submit"]');if(submitBtn){setTimeout(()=>{submitBtn.click();},500);}}else{usernameInput.value='';if(passwordInput)passwordInput.value='';}});}})();`;
+        document.body.appendChild(script);
 
-        alert("Skrip Auto-Login SIASN BKN dijalankan!");
+        // Ubah tombol jadi hijau untuk memberikan tanda ke user
+        btn.innerHTML = '✅ Sistem Aktif!';
+        btn.style.backgroundColor = '#4caf50';
+        btn.style.borderColor = '#4caf50';
+        btn.style.color = '#fff';
 
-        (async function() {
-            'use strict';
-
-            // Menggunakan CORS Proxy agar tidak terkena Failed to fetch di web BKN
-            const csvUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://docs.google.com/spreadsheets/d/e/2PACX-1vR7HiwxSR1ks5OJNDv0OLbJwkdC2mu285TecsMCALPB_8NkSQfraDATxXJid9NnAuCpkyehcLAD9vHd/pub?gid=0&single=true&output=csv');
-
-            function waitForElement(selector, timeout = 5000) {
-                return new Promise((resolve, reject) => {
-                    if (document.querySelector(selector)) return resolve(document.querySelector(selector));
-                    const observer = new MutationObserver(() => {
-                        if (document.querySelector(selector)) {
-                            observer.disconnect();
-                            resolve(document.querySelector(selector));
-                        }
-                    });
-                    observer.observe(document.body, { childList: true, subtree: true });
-                    setTimeout(() => {
-                        observer.disconnect();
-                        reject(new Error(`Timeout: Elemen ${selector} tidak ditemukan.`));
-                    }, timeout);
-                });
-            }
-
-            function cariTombolLoginPortal() {
-                const spans = document.querySelectorAll('span');
-                for (let span of spans) {
-                    if (span.textContent.trim().toLowerCase() === 'login') {
-                        const parentDiv = span.closest('div.text-center.flex.flex-col');
-                        if (parentDiv) return parentDiv;
-                    }
-                }
-                return null;
-            }
-
-            async function generateNativeTOTP(secretBase32) {
-                const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-                let bits = '';
-                
-                for (let i = 0; i < secretBase32.length; i++) {
-                    const char = secretBase32.charAt(i).toUpperCase();
-                    if (char === '=' || char === ' ') continue;
-                    const val = base32chars.indexOf(char);
-                    if (val === -1) throw new Error("Format Secret Key tidak valid");
-                    bits += val.toString(2).padStart(5, '0');
-                }
-                
-                const keyArray = new Uint8Array(Math.floor(bits.length / 8));
-                for (let i = 0; i < keyArray.length; i++) {
-                    keyArray[i] = parseInt(bits.substr(i * 8, 8), 2);
-                }
-
-                const cryptoKey = await crypto.subtle.importKey('raw', keyArray, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
-                const timeStep = Math.floor(Date.now() / 30000);
-                const timeBuffer = new ArrayBuffer(8);
-                new DataView(timeBuffer).setUint32(4, timeStep, false); 
-                
-                const signature = await crypto.subtle.sign('HMAC', cryptoKey, timeBuffer);
-                const hmac = new Uint8Array(signature);
-                
-                const offset = hmac[hmac.length - 1] & 0xf;
-                const code = ((hmac[offset] & 0x7f) << 24) | ((hmac[offset + 1] & 0xff) << 16) | ((hmac[offset + 2] & 0xff) << 8) | (hmac[offset + 3] & 0xff);
-                
-                return (code % 1000000).toString().padStart(6, '0');
-            }
-
-            function parseCSV(csvText) {
-                const lines = csvText.split('\n');
-                const result = [];
-                for (let i = 0; i < lines.length; i++) {
-                    if (lines[i].trim() === '') continue;
-                    const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (row.length >= 2) {
-                        const nama = row[0] ? row[0].trim().replace(/^"|"$/g, '') : '';
-                        const nip = row[1] ? row[1].trim().replace(/^"|"$/g, '') : '';
-                        const password = row[2] ? row[2].trim().replace(/^"|"$/g, '') : '';
-                        const secret = row[3] ? row[3].trim().replace(/^"|"$/g, '') : ''; 
-                        result.push({ nama, nip, password, secret });
-                    }
-                }
-                return result;
-            }
-
-            setInterval(async () => {
-                const btnPortalLogin = cariTombolLoginPortal();
-                const btnMasuk = document.getElementById('btn-login');
-                const usernameInput = document.getElementById('username');
-                const otpInput = document.getElementById('otp') || document.getElementById('totp');
-                const nipDisplay = document.getElementById('kc-attempted-username');
-
-                if (btnPortalLogin && !document.getElementById('flag-portal-clicked')) {
-                    const flag = document.createElement('div');
-                    flag.id = 'flag-portal-clicked';
-                    document.body.appendChild(flag);
-                    console.log("Menemukan ikon Login. Mengklik...");
-                    btnPortalLogin.click();
-                }
-                else if (btnMasuk && !document.getElementById('flag-btn-masuk-clicked')) {
-                    const flag = document.createElement('div');
-                    flag.id = 'flag-btn-masuk-clicked';
-                    document.body.appendChild(flag);
-                    console.log("Menemukan tombol Masuk (#btn-login). Mengklik...");
-                    setTimeout(() => {
-                        btnMasuk.click();
-                    }, 500);
-                }
-                else if (usernameInput && !document.getElementById('dropdown-siasn') && !document.getElementById('flag-delay-login')) {
-                    const flagDelay = document.createElement('div');
-                    flagDelay.id = 'flag-delay-login';
-                    document.body.appendChild(flagDelay);
-                    console.log("Halaman SSO Login terbuka. Menunggu 5 detik sebelum memuat data...");
-                    
-                    setTimeout(async () => {
-                        const flagDropdown = document.createElement('div');
-                        flagDropdown.id = 'dropdown-siasn';
-                        document.body.appendChild(flagDropdown);
-                        
-                        try {
-                            const response = await fetch(csvUrl);
-                            if (!response.ok) throw new Error("Gagal membaca Google Sheets CSV");
-                            const csvData = await response.text();
-                            const dataPegawai = parseCSV(csvData);
-                            
-                            buatDropdown(dataPegawai, usernameInput, document.getElementById('password'));
-                            console.log("Data berhasil dimuat setelah delay 5 detik.");
-                        } catch (error) {
-                            console.error("Gagal memuat Halaman 1:", error);
-                        }
-                    }, 5000); 
-                } 
-                else if ((otpInput || nipDisplay) && !document.getElementById('otp-processed')) {
-                    const flag = document.createElement('div');
-                    flag.id = 'otp-processed';
-                    document.body.appendChild(flag);
-                    console.log("Halaman OTP terdeteksi. Menjalankan skrip Native TOTP...");
-
-                    try {
-                        const nipElement = await waitForElement('#kc-attempted-username');
-                        const nip = nipElement.innerText.trim();
-                        
-                        const response = await fetch(csvUrl);
-                        if (!response.ok) throw new Error("Gagal membaca CSV");
-                        const csvData = await response.text();
-                        const dataPegawai = parseCSV(csvData);
-                        
-                        const pegawaiTerpilih = dataPegawai.find(p => p.nip === nip);
-                        if (!pegawaiTerpilih || !pegawaiTerpilih.secret) {
-                            throw new Error("Secret Key tidak ditemukan.");
-                        }
-
-                        const otpCode = await generateNativeTOTP(pegawaiTerpilih.secret);
-                        const targetOtpInput = await waitForElement('#otp, #totp, input[autocomplete="one-time-code"]');
-                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                        nativeInputValueSetter.call(targetOtpInput, otpCode);
-                        
-                        targetOtpInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        targetOtpInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-                        const submitBtn = await waitForElement('input[type="submit"], button[type="submit"], #kc-login');
-                        setTimeout(() => {
-                            submitBtn.click();
-                        }, 500);
-
-                    } catch (error) {
-                        console.error("Sistem Otomatisasi OTP Terhenti:", error.message);
-                    }
-                }
-            }, 1000); 
-
-            function buatDropdown(dataPegawai, usernameInput, passwordInput) {
-                const selectContainer = document.createElement('div');
-                selectContainer.style.marginBottom = '20px'; 
-
-                const selectLabel = document.createElement('label');
-                selectLabel.innerText = 'Pilih Nama Pegawai (Login & OTP Otomatis 100%):';
-                selectLabel.style.display = 'block';
-                selectLabel.style.marginBottom = '5px';
-                selectLabel.style.fontWeight = 'bold';
-                selectLabel.style.color = '#0056b3';
-
-                const selectElement = document.createElement('select');
-                selectElement.style.width = '100%';
-                selectElement.style.padding = '8px';
-                selectElement.style.border = '1px solid #ccc';
-                selectElement.style.borderRadius = '4px';
-                selectElement.style.backgroundColor = '#f0f8ff';
-                selectElement.style.fontSize = '14px';
-
-                const defaultOption = document.createElement('option');
-                defaultOption.text = '-- Silakan Pilih Nama --';
-                defaultOption.value = '';
-                selectElement.appendChild(defaultOption);
-
-                dataPegawai.forEach(pegawai => {
-                    const option = document.createElement('option');
-                    option.value = pegawai.nip || pegawai.nama; 
-                    option.text = !pegawai.nip ? pegawai.nama + " (NIP Kosong)" : pegawai.nama;
-                    selectElement.appendChild(option);
-                });
-
-                selectContainer.appendChild(selectLabel);
-                selectContainer.appendChild(selectElement);
-                usernameInput.parentNode.insertBefore(selectContainer, usernameInput);
-
-                selectElement.addEventListener('change', function(e) {
-                    const selectedValue = e.target.value;
-                    const dataTerpilih = dataPegawai.find(p => p.nip === selectedValue || p.nama === selectedValue);
-                    
-                    if (dataTerpilih && dataTerpilih.nip) {
-                        usernameInput.value = dataTerpilih.nip;
-                        usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-                        if (passwordInput && dataTerpilih.password) {
-                            passwordInput.value = dataTerpilih.password;
-                            passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
-                            passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                        
-                        const submitBtn = document.getElementById('kc-login') || document.querySelector('input[type="submit"]') || document.querySelector('button[type="submit"]');
-                        if (submitBtn) {
-                            setTimeout(() => {
-                                submitBtn.click();
-                            }, 500); 
-                        }
-
-                    } else {
-                        usernameInput.value = '';
-                        if (passwordInput) passwordInput.value = '';
-                    }
-                });
-            }
-        })();
+        // Menutup menu dengan rapi
+        setTimeout(() => {
+            var ui = document.getElementById('menu-injector-dapodik');
+            if(ui) ui.remove();
+        }, 1000);
     };
 
 })();
