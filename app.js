@@ -392,52 +392,76 @@
                 let studentPayload = dataSiswaMemory.find(s => (s.anggota_rombel_id || s.id) === identifierId);
                 if(!studentPayload) return;
 
-                // --- MENGGUNAKAN POPUP EXT.MSG.CONFIRM DAPODIK ---
-                Ext.Msg.confirm('Konfirmasi Pemindahan', `Apakah anda yakin untuk memindahkan peserta didik <b>"${namaSiswa}"</b> ke <b>${rombelTujuanNama}</b>?`, function(btn) {
-                    if (btn === 'yes') {
-                        const btnSubmit = document.getElementById('btn-daftarkan-pro');
-                        btnSubmit.innerHTML = "⏳ Memproses...";
-                        btnSubmit.disabled = true;
+                // --- BUAT POPUP KONFIRMASI CUSTOM ---
+                const konfirmasiHtml = `
+                <div id="modal-konfirmasi-custom" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999999; display:flex; align-items:center; justify-content:center; font-family: 'Segoe UI', Tahoma, sans-serif;">
+                    <div style="background:#fff; padding:30px; border-radius:10px; width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.3); text-align:center;">
+                        <div style="font-size:45px; margin-bottom:15px; line-height:1;">❓</div>
+                        <h3 style="margin-top:0; color:#1e293b; font-size:18px;">Konfirmasi Pemindahan</h3>
+                        <p style="color:#475569; font-size:14px; line-height:1.5; margin-bottom:25px;">
+                            Apakah Anda yakin untuk memindahkan peserta didik<br><b style="color:#0f172a; font-size:15px;">"${namaSiswa}"</b><br>ke <b>${rombelTujuanNama}</b>?
+                        </p>
+                        <div style="display:flex; justify-content:center; gap:10px;">
+                            <button id="btn-konf-batal" style="padding:10px 15px; cursor:pointer; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:5px; font-weight:600; flex:1; transition:0.2s;">Batal</button>
+                            <button id="btn-konf-yakin" style="padding:10px 15px; cursor:pointer; background:#3b82f6; color:white; border:none; border-radius:5px; font-weight:600; flex:1; box-shadow:0 2px 4px rgba(59, 130, 246, 0.3); transition:0.2s;">Oke, Pindahkan</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', konfirmasiHtml);
 
-                        let payloadUpdate = Object.assign({}, studentPayload);
-                        payloadUpdate.rombongan_belajar_id = rombelTujuanId;
-                        payloadUpdate.jenis_pendaftaran_id = parseInt(jenisDaftarId);
+                // Jika batal diklik
+                document.getElementById('btn-konf-batal').onclick = function() {
+                    document.getElementById('modal-konfirmasi-custom').remove();
+                };
 
-                        Ext.Ajax.request({
-                            url: '/rest/AnggotaRombel/' + identifierId,
-                            method: 'PUT',
-                            jsonData: payloadUpdate,
-                            success: function(response) {
-                                try {
-                                    let jsonRespon = Ext.decode(response.responseText);
-                                    if(jsonRespon.success || jsonRespon.rows) {
-                                        showNotif(`Peserta didik <b>${namaSiswa}</b> berhasil dipindahkan silahkan cek di rombel tujuan.`);
-                                        Ext.getCmp('rombonganbelajargrid-1015').getStore().reload();
-                                        document.getElementById('pro-rombel-awal').dispatchEvent(new Event('change'));
-                                    } else {
-                                        showNotif(jsonRespon.message || "Gagal diperbarui oleh server.", true);
-                                    }
-                                } catch(e) {
+                // Jika yakin diklik -> Eksekusi API
+                document.getElementById('btn-konf-yakin').onclick = function() {
+                    // Hapus popup konfirmasi
+                    document.getElementById('modal-konfirmasi-custom').remove();
+
+                    const btnSubmit = document.getElementById('btn-daftarkan-pro');
+                    btnSubmit.innerHTML = "⏳ Memproses...";
+                    btnSubmit.disabled = true;
+
+                    let payloadUpdate = Object.assign({}, studentPayload);
+                    payloadUpdate.rombongan_belajar_id = rombelTujuanId;
+                    payloadUpdate.jenis_pendaftaran_id = parseInt(jenisDaftarId);
+
+                    Ext.Ajax.request({
+                        url: '/rest/AnggotaRombel/' + identifierId,
+                        method: 'PUT',
+                        jsonData: payloadUpdate,
+                        success: function(response) {
+                            try {
+                                let jsonRespon = Ext.decode(response.responseText);
+                                if(jsonRespon.success || jsonRespon.rows) {
                                     showNotif(`Peserta didik <b>${namaSiswa}</b> berhasil dipindahkan silahkan cek di rombel tujuan.`);
                                     Ext.getCmp('rombonganbelajargrid-1015').getStore().reload();
                                     document.getElementById('pro-rombel-awal').dispatchEvent(new Event('change'));
+                                } else {
+                                    showNotif(jsonRespon.message || "Gagal diperbarui oleh server.", true);
                                 }
-                                btnSubmit.innerHTML = "Eksekusi Data";
-                                btnSubmit.disabled = false;
-                            },
-                            failure: function(err) {
-                                let msg = "Terjadi kesalahan server.";
-                                try { msg = Ext.decode(err.responseText).message || err.responseText; } catch(e){}
-                                if(msg.includes('duplicate') || msg.includes('unique')) {
-                                    msg = "Database Menolak (Duplikat): Siswa ini sudah pernah tercatat di kelas tujuan.";
-                                }
-                                showNotif(msg, true);
-                                btnSubmit.innerHTML = "Eksekusi Data";
-                                btnSubmit.disabled = false;
+                            } catch(e) {
+                                showNotif(`Peserta didik <b>${namaSiswa}</b> berhasil dipindahkan silahkan cek di rombel tujuan.`);
+                                Ext.getCmp('rombonganbelajargrid-1015').getStore().reload();
+                                document.getElementById('pro-rombel-awal').dispatchEvent(new Event('change'));
                             }
-                        });
-                    }
-                });
+                            btnSubmit.innerHTML = "Eksekusi Data";
+                            btnSubmit.disabled = false;
+                        },
+                        failure: function(err) {
+                            let msg = "Terjadi kesalahan server.";
+                            try { msg = Ext.decode(err.responseText).message || err.responseText; } catch(e){}
+                            if(msg.includes('duplicate') || msg.includes('unique')) {
+                                msg = "Database Menolak (Duplikat): Siswa ini sudah pernah tercatat di kelas tujuan.";
+                            }
+                            showNotif(msg, true);
+                            btnSubmit.innerHTML = "Eksekusi Data";
+                            btnSubmit.disabled = false;
+                        }
+                    });
+                };
             };
         })();
     };
