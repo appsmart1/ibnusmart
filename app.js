@@ -216,10 +216,9 @@
                 document.getElementById('modal-mutasi-pro').remove();
             }
 
-            // 2. Membangun Antarmuka (UI) Modern
+            // 2. Membangun Antarmuka (UI) Utama
             const modalHtml = `
             <style>
-                /* Gaya khusus untuk tombol jenis pendaftaran */
                 .btn-jenis {
                     padding: 8px 5px;
                     background: #f1f3f5;
@@ -232,9 +231,7 @@
                     transition: all 0.2s ease;
                     text-align: center;
                 }
-                .btn-jenis:hover {
-                    background: #e9ecef;
-                }
+                .btn-jenis:hover { background: #e9ecef; }
                 .btn-jenis.active {
                     background: #22A6F1;
                     color: white;
@@ -284,7 +281,7 @@
                     </div>
 
                     <div style="margin-top:30px; text-align:right;">
-                        <button id="btn-tutup-pro" style="padding:10px 20px; margin-right:10px; cursor:pointer; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:5px; font-weight:600; transition:0.2s;">Batal</button>
+                        <button id="btn-tutup-pro" style="padding:10px 20px; margin-right:10px; cursor:pointer; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:5px; font-weight:600; transition:0.2s;">Tutup</button>
                         <button id="btn-daftarkan-pro" style="padding:10px 20px; cursor:pointer; background:#10b981; color:white; border:none; border-radius:5px; font-weight:600; transition:0.2s; box-shadow:0 2px 4px rgba(16, 185, 129, 0.3);">Eksekusi Data</button>
                     </div>
                 </div>
@@ -294,7 +291,7 @@
 
             let dataSiswaMemory = []; 
 
-            // Pengatur Notifikasi
+            // Pengatur Notifikasi Form Utama
             function showNotif(msg, isError = false) {
                 const notif = document.getElementById('pro-notif');
                 notif.style.display = 'block';
@@ -308,9 +305,7 @@
             // Interaksi Grup Tombol Jenis Pendaftaran
             document.querySelectorAll('.btn-jenis').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Hapus class active dari semua tombol
                     document.querySelectorAll('.btn-jenis').forEach(b => b.classList.remove('active'));
-                    // Tambahkan class active ke tombol yang diklik
                     this.classList.add('active');
                 });
             });
@@ -349,7 +344,6 @@
                                     let namaSiswa = s.peserta_didik_id_str || s.nama || s.nama_peserta_didik || "Tanpa Nama";
                                     let nisnSiswa = s.nisn ? ` - ${s.nisn}` : '';
                                     let identifierId = s.anggota_rombel_id || s.id; 
-                                    
                                     opsiSiswa += `<option value="${identifierId}">${namaSiswa}${nisnSiswa}</option>`;
                                 });
                                 
@@ -377,7 +371,7 @@
                 document.getElementById('modal-mutasi-pro').remove();
             };
 
-            // 4. Eksekusi Pemindahan (Metode PUT / Edit Kelas)
+            // 4. Eksekusi Pemindahan (Tampil Konfirmasi Custom)
             document.getElementById('btn-daftarkan-pro').onclick = function() {
                 hideNotif();
                 const elSiswa = document.getElementById('pro-siswa');
@@ -386,8 +380,6 @@
                 const elRombelTujuan = document.getElementById('pro-rombel-tujuan');
                 const rombelTujuanId = elRombelTujuan.value;
                 const rombelTujuanNama = elRombelTujuan.options[elRombelTujuan.selectedIndex]?.text;
-                
-                // Mengambil nilai dari tombol jenis pendaftaran yang sedang aktif
                 const jenisDaftarId = document.querySelector('.btn-jenis.active').getAttribute('data-val');
                 
                 const textSiswaFull = elSiswa.options[elSiswa.selectedIndex]?.text; 
@@ -405,52 +397,76 @@
                 let studentPayload = dataSiswaMemory.find(s => (s.anggota_rombel_id || s.id) === identifierId);
                 if(!studentPayload) return;
 
-                // Menampilkan Notifikasi Konfirmasi Sesuai Permintaan
-                const konfirmasi = confirm(`Apakah anda yakin untuk memindahkan peserta didik "${namaSiswa}" ke ${rombelTujuanNama}?`);
-                if(!konfirmasi) return;
+                // --- BUAT POPUP KONFIRMASI CUSTOM ---
+                const konfirmasiHtml = `
+                <div id="modal-konfirmasi-custom" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999999; display:flex; align-items:center; justify-content:center; font-family: 'Segoe UI', Tahoma, sans-serif;">
+                    <div style="background:#fff; padding:30px; border-radius:10px; width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.3); text-align:center;">
+                        <div style="font-size:45px; margin-bottom:15px; line-height:1;">❓</div>
+                        <h3 style="margin-top:0; color:#1e293b; font-size:18px;">Konfirmasi Pemindahan</h3>
+                        <p style="color:#475569; font-size:14px; line-height:1.5; margin-bottom:25px;">
+                            Apakah Anda yakin untuk memindahkan peserta didik<br><b style="color:#0f172a; font-size:15px;">"${namaSiswa}"</b><br>ke <b>${rombelTujuanNama}</b>?
+                        </p>
+                        <div style="display:flex; justify-content:center; gap:10px;">
+                            <button id="btn-konf-batal" style="padding:10px 15px; cursor:pointer; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:5px; font-weight:600; flex:1; transition:0.2s;">Batal</button>
+                            <button id="btn-konf-yakin" style="padding:10px 15px; cursor:pointer; background:#3b82f6; color:white; border:none; border-radius:5px; font-weight:600; flex:1; box-shadow:0 2px 4px rgba(59, 130, 246, 0.3); transition:0.2s;">Oke, Pindahkan</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', konfirmasiHtml);
 
-                const btnSubmit = document.getElementById('btn-daftarkan-pro');
-                btnSubmit.innerHTML = "⏳ Memproses...";
-                btnSubmit.disabled = true;
+                // Jika batal diklik
+                document.getElementById('btn-konf-batal').onclick = function() {
+                    document.getElementById('modal-konfirmasi-custom').remove();
+                };
 
-                let payloadUpdate = Object.assign({}, studentPayload);
-                payloadUpdate.rombongan_belajar_id = rombelTujuanId;
-                payloadUpdate.jenis_pendaftaran_id = parseInt(jenisDaftarId);
+                // Jika yakin diklik -> Eksekusi API
+                document.getElementById('btn-konf-yakin').onclick = function() {
+                    // Hapus popup konfirmasi
+                    document.getElementById('modal-konfirmasi-custom').remove();
 
-                Ext.Ajax.request({
-                    url: '/rest/AnggotaRombel/' + identifierId,
-                    method: 'PUT',
-                    jsonData: payloadUpdate,
-                    success: function(response) {
-                        try {
-                            let jsonRespon = Ext.decode(response.responseText);
-                            if(jsonRespon.success || jsonRespon.rows) {
-                                // Menampilkan Notifikasi Sukses Sesuai Permintaan
-                                showNotif(`Peserta didik ${namaSiswa} berhasil dipindahkan silahkan cek di rombel tujuan.`);
+                    const btnSubmit = document.getElementById('btn-daftarkan-pro');
+                    btnSubmit.innerHTML = "⏳ Memproses...";
+                    btnSubmit.disabled = true;
+
+                    let payloadUpdate = Object.assign({}, studentPayload);
+                    payloadUpdate.rombongan_belajar_id = rombelTujuanId;
+                    payloadUpdate.jenis_pendaftaran_id = parseInt(jenisDaftarId);
+
+                    Ext.Ajax.request({
+                        url: '/rest/AnggotaRombel/' + identifierId,
+                        method: 'PUT',
+                        jsonData: payloadUpdate,
+                        success: function(response) {
+                            try {
+                                let jsonRespon = Ext.decode(response.responseText);
+                                if(jsonRespon.success || jsonRespon.rows) {
+                                    showNotif(`Peserta didik <b>${namaSiswa}</b> berhasil dipindahkan silahkan cek di rombel tujuan.`);
+                                    Ext.getCmp('rombonganbelajargrid-1015').getStore().reload();
+                                    document.getElementById('pro-rombel-awal').dispatchEvent(new Event('change'));
+                                } else {
+                                    showNotif(jsonRespon.message || "Gagal diperbarui oleh server.", true);
+                                }
+                            } catch(e) {
+                                showNotif(`Peserta didik <b>${namaSiswa}</b> berhasil dipindahkan silahkan cek di rombel tujuan.`);
                                 Ext.getCmp('rombonganbelajargrid-1015').getStore().reload();
                                 document.getElementById('pro-rombel-awal').dispatchEvent(new Event('change'));
-                            } else {
-                                showNotif(jsonRespon.message || "Gagal diperbarui oleh server.", true);
                             }
-                        } catch(e) {
-                            showNotif(`Peserta didik ${namaSiswa} berhasil dipindahkan silahkan cek di rombel tujuan.`);
-                            Ext.getCmp('rombonganbelajargrid-1015').getStore().reload();
-                            document.getElementById('pro-rombel-awal').dispatchEvent(new Event('change'));
+                            btnSubmit.innerHTML = "Eksekusi Data";
+                            btnSubmit.disabled = false;
+                        },
+                        failure: function(err) {
+                            let msg = "Terjadi kesalahan server.";
+                            try { msg = Ext.decode(err.responseText).message || err.responseText; } catch(e){}
+                            if(msg.includes('duplicate') || msg.includes('unique')) {
+                                msg = "Database Menolak (Duplikat): Siswa ini sudah pernah tercatat di kelas tujuan.";
+                            }
+                            showNotif(msg, true);
+                            btnSubmit.innerHTML = "Eksekusi Data";
+                            btnSubmit.disabled = false;
                         }
-                        btnSubmit.innerHTML = "Eksekusi Data";
-                        btnSubmit.disabled = false;
-                    },
-                    failure: function(err) {
-                        let msg = "Terjadi kesalahan server.";
-                        try { msg = Ext.decode(err.responseText).message || err.responseText; } catch(e){}
-                        if(msg.includes('duplicate') || msg.includes('unique')) {
-                            msg = "Database Menolak (Duplikat): Siswa ini sudah pernah tercatat di kelas tujuan.";
-                        }
-                        showNotif(msg, true);
-                        btnSubmit.innerHTML = "Eksekusi Data";
-                        btnSubmit.disabled = false;
-                    }
-                });
+                    });
+                };
             };
         })();
     };
@@ -474,7 +490,7 @@
 
     document.getElementById('btn-input-pd').onclick = function(e) {
         e.preventDefault(); e.stopPropagation();
-        jalankanBookmarkletAsli(`javascript:(function()%7B(async()%3D>%7B"undefined"%3D%3Dtypeof XLSX%26%26await new Promise(e%3D>%7Bconst t%3Ddocument.createElement("script")%3Bt.src%3D"https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fxlsx%2Fdist%2Fxlsx.full.min.js"%2Ct.onload%3De%2Cdocument.head.appendChild(t)%7D)%2Cdocument.getElementById("excelPanel")%3F.remove()%3Bconst e%3Ddocument.createElement("div")%3Be.id%3D"excelPanel"%2Ce.style.cssText%3D"box-sizing%3A border-box%3Bposition%3Afixed%3Btop%3A100px%3Bright%3A30px%3Bwidth%3A25em%3Bbackground%3A%23fff%3Bbox-shadow%3A rgba(99%2C 99%2C 99%2C 0.2) 0px 2px 8px 0px%3B%3Bz-index%3A999999999%3Boverflow%3Ahidden%3Bfont-size%3A 15px"%3Bconst t%3Ddocument.createElement("div")%3Bt.style.cssText%3D"display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bpadding%3A5px 10px%3Bcursor%3Amove%3Buser-select%3Anone"%3Bconst n%3Ddocument.createElement("span")%3Bn.textContent%3D"Input Matic - %40danie_lung"%3Bconst o%3Ddocument.createElement("button")%3Bo.textContent%3D"✕"%2Co.style.cssText%3D"border%3Anone%3Bbackground%3A0 0%3Bcursor%3Apointer"%2Co.onclick%3D()%3D>%7Be.remove()%2Cp.remove()%7D%2Ct.appendChild(n)%2Ct.appendChild(o)%3Bconst d%3Ddocument.createElement("div")%3Bd.style.padding%3D"10px"%3Bconst s%3Ddocument.createElement("button")%3Bs.textContent%3D"Import Excel"%2Cs.style.cssText%3D"width%3A100%25%3Bpadding%3A8px%3Bborder%3Anone%3Bborder-radius%3A5px%3Bbackground%3A%230a84ff%3Bcolor%3A%23fff%3Bcursor%3Apointer%3Bmargin-bottom%3A 10px"%2Cs.onclick%3D()%3D>%7Bp.value%3D""%2Cp.click()%7D%3Bconst c%3Ddocument.createElement("select")%3Bc.id%3D"excelHeader"%2Cc.style.cssText%3D"width%3A100%25%3Bpadding%3A8px%3Bline-height%3A normal%3Bheight%3A inherit"%3Bconst i%3Ddocument.createElement("input")%3Bi.type%3D"text"%2Ci.placeholder%3D"Selector (id%2C name%2C class%2C dll)"%2Ci.style.cssText%3D"width%3A100%25%3Bpadding%3A8px%3Bmargin-bottom%3A10px%3Bborder%3A1px solid"%2Cd.appendChild(s)%2Cd.appendChild(i)%2Cd.appendChild(c)%2Ce.appendChild(t)%2Ce.appendChild(d)%2Cdocument.body.appendChild(e)%3Blet l%3D!1%2Ca%3D0%2Cr%3D0%3Bt.addEventListener("mousedown"%2Ct%3D>%7Bl%3D!0%2Ce.style.left%3De.offsetLeft%2B"px"%2Ce.style.top%3De.offsetTop%2B"px"%2Ce.style.right%3D"auto"%2Ca%3Dt.clientX-e.offsetLeft%2Cr%3Dt.clientY-e.offsetTop%7D)%2Cdocument.addEventListener("mousemove"%2Ct%3D>%7Bl%26%26(e.style.left%3Dt.clientX-a%2B"px"%2Ce.style.top%3Dt.clientY-r%2B"px")%7D)%2Cdocument.addEventListener("mouseup"%2C()%3D>%7Bl%3D!1%7D)%3Bconst p%3Ddocument.createElement("input")%3Bp.type%3D"file"%2Cp.accept%3D".xlsx%2C.xls"%2Cp.style.display%3D"none"%2Cdocument.body.appendChild(p)%2Cp.onchange%3Dfunction()%7Bconst e%3Dthis.files%5B0%5D%3Bif(!e)return%3Bconst t%3Dnew FileReader%3Bt.onload%3Dfunction(e)%7Bconst t%3DXLSX.read(e.target.result%2C%7Btype%3A"array"%7D)%2Cn%3Dt.Sheets%5Bt.SheetNames%5B0%5D%5D%2Co%3DXLSX.utils.sheet_to_json(n%2C%7Bheader%3A1%2Cdefval%3A""%7D)%3Bif(!o.length)return%3Bconst d%3Do%5B0%5D.map(e%3D>String(e).trim().replace(%2F%5Cs%2B%2Fg%2C"_"))%2Cs%3Do.slice(1).filter(e%3D>e.some(e%3D>""!%3D%3DString(e%3F%3F"").trim()))%3Bc.innerHTML%3D""%3Bconst l%3Ddocument.createElement("option")%3Bl.value%3D""%2Cl.textContent%3D"-- Pilih data --"%2Cl.selected%3D!0%2Cl.disabled%3D!0%2Cc.appendChild(l)%2Cs.forEach((e%2Ct)%3D>%7Bconst n%3Ddocument.createElement("option")%3Bn.value%3Dt%2B1%2Cn.textContent%3De%5B0%5D%7C%7C%60Baris %24%7Bt%2B1%7D%60%2Cd.forEach((t%2Co)%3D>%7Bn.dataset%5Bt%5D%3De%5Bo%5D%3F%3F""%7D)%2Cc.appendChild(n)%7D)%2Cc.onchange%3Dfunction()%7Bconst e%3Dthis.selectedOptions%5B0%5D.dataset%2Ct%3Ddocument.getElementById("simpanPD")%3BObject.keys(e).forEach(t%3D>%7Bconst n%3Di.value.trim()%7C%7C"name"%2Co%3D"class"%3D%3D%3Dn%3Fdocument.querySelector(%60.%24%7Bt%7D%60)%3A"id"%3D%3D%3Dn%3Fdocument.querySelector(%60%23%24%7Bt%7D%60)%3Adocument.querySelector(%60%5B%24%7Bn%7D%3D"%24%7Bt%7D"%5D%60)%3Bif(!o)return%3Bconst d%3DString(e%5Bt%5D).trim()%3Bif("SELECT"%3D%3D%3Do.tagName)%7Bo.removeAttribute("onchange")%2Co.onchange%3Dnull%3Blet e%3D%5B...o.options%5D.find(e%3D>e.textContent.trim().toLowerCase()%3D%3D%3Dd.toLowerCase()%7C%7CString(e.value).trim()%3D%3D%3Dd)%3Be%7C%7C(e%3Dnew Option(d%2Cd)%2Co.add(e))%2Co.value%3De.value%2Cwindow.jQuery%26%26jQuery(o).hasClass("select2-hidden-accessible")%26%26jQuery(o).trigger("change.select2")%7Delse o.value%3Dd%3Bo.dispatchEvent(new Event("input"%2C%7Bbubbles%3A!0%7D))%2Co.dispatchEvent(new Event("change"%2C%7Bbubbles%3A!0%7D))%7D)%2Ct%26%26(t.style.display%3D"block")%7D%2Cc.options.length%26%26(c.selectedIndex%3D0%2Cc.dispatchEvent(new Event("change")))%7D%2Ct.readAsArrayBuffer(e)%7D%7D)()%3B%7D)();`);
+        jalankanBookmarkletAsli(`javascript:(function()%7B(async()%3D>%7B"undefined"%3D%3Dtypeof XLSX%26%26await new Promise(e%3D>%7Bconst t%3Ddocument.createElement("script")%3Bt.src%3D"https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fxlsx%2Fdist%2Fxlsx.full.min.js"%2Ct.onload%3De%2Cdocument.head.appendChild(t)%7D)%2Cdocument.getElementById("excelPanel")%3F.remove()%3Bconst e%3Ddocument.createElement("div")%3Be.id%3D"excelPanel"%2Ce.style.cssText%3D"box-sizing%3A border-box%3Bposition%3Afixed%3Btop%3A100px%3Bright%3A30px%3Bwidth%3A25em%3Bbackground%3A%23fff%3Bbox-shadow%3A rgba(99%2C 99%2C 99%2C 0.2) 0px 2px 8px 0px%3B%3Bz-index%3A999999999%3Boverflow%3Ahidden%3Bfont-size%3A 15px"%3Bconst t%3Ddocument.createElement("div")%3Bt.style.cssText%3D"display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bpadding%3A5px 10px%3Bcursor%3Amove%3Buser-select%3Anone"%3Bconst n%3Ddocument.createElement("span")%3Bn.textContent%3D"Input Matic - %40danie_lung"%3Bconst o%3Ddocument.createElement("button")%3Bo.textContent%3D"✕"%2Co.style.cssText%3D"border%3Anone%3Bbackground%3A0 0%3Bcursor%3Apointer"%2Co.onclick%3D()%3D>%7Be.remove()%2Cp.remove()%7D%2Ct.appendChild(n)%2Ct.appendChild(o)%3Bconst d%3Ddocument.createElement("div")%3Bd.style.padding%3D"10px"%3Bconst s%3Ddocument.createElement("button")%3Bs.textContent%3D"Import Excel"%2Cs.style.cssText%3D"width%3A100%25%3Bpadding%3A8px%3Bborder%3Anone%3Bborder-radius%3A5px%3Bbackground%3A%230a84ff%3Bcolor%3A%23fff%3Bcursor%3Apointer%3Bmargin-bottom%3A 10px"%2Cs.onclick%3D()%3D>%7Bp.value%3D""%2Cp.click()%7D%3Bconst c%3Ddocument.createElement("select")%3Bc.id%3D"excelHeader"%2Cc.style.cssText%3D"width%3A100%25%3Bpadding%3A8px%3Bline-height%3A normal%3Bheight%3A inherit"%3Bconst i%3Ddocument.createElement("input")%3Bi.type%3D"text"%2Ci.placeholder%3D"Selector (id%2C name%2C class%2C dll)"%2Ci.style.cssText%3D"width%3A100%25%3Bpadding%3A8px%3Bmargin-bottom%3A10px%3Bborder%3A1px solid"%2Cd.appendChild(s)%2Cd.appendChild(i)%2Cd.appendChild(c)%2Ce.appendChild(t)%2Ce.appendChild(d)%2Cdocument.body.appendChild(e)%3Blet l%3D!1%2Ca%3D0%2Cr%3D0%3Bt.addEventListener("mousedown"%2Ct%3D>%7Bl%3D!0%2Ce.style.left%3De.offsetLeft%2B"px"%2Ce.style.top%3De.offsetTop%2B"px"%2Ce.style.right%3D"auto"%2Ca%3Dt.clientX-e.offsetLeft%2Cr%3Dt.clientY-e.offsetTop%7D)%2Cdocument.addEventListener("mousemove"%2Ct%3D>%7Bl%26%26(e.style.left%3Dt.clientX-a%2B"px"%2Ce.style.top%3Dt.clientY-r%2B"px")%7D)%2Cdocument.addEventListener("mouseup"%2C()%3D>%7Bl%3D!1%7D)%3Bconst p%3Ddocument.createElement("input")%3Bp.type%3D"file"%2Cp.accept%3D".xlsx%2C.xls"%2Cp.style.display%3D"none"%2Cdocument.body.appendChild(p)%2Cp.onchange%3Dfunction()%7Bconst e%3Dthis.files%5B0%5D%3Bif(!e)return%3Bconst t%3Dnew FileReader%3Bt.onload%3Dfunction(e)%7Bconst t%3DXLSX.read(e.target.result%2C%7Btype%3A"array"%7D)%2Cn%3Dt.Sheets%5Bt.SheetNames%5B0%5D%5D%2Co%3DXLSX.utils.sheet_to_json(n%2C%7Bheader%3A1%2Cdefval%3A""%7D)%3Bif(!o.length)return%3Bconst d%3Do%5B0%5D.map(e%3D>String(e).trim().replace(%2F%5Cs%2B%2Fg%2C"_"))%2Cs%3Do.slice(1).filter(e%3D>e.some(e%3D>""!%3D%3DString(e%3F%3F"").trim()))%3Bc.innerHTML%3D""%3Bconst l%3Ddocument.createElement("option")%3Bl.value%3D""%2Cl.textContent%3D"-- Pilih data --"%2Cl.selected%3D!0%2Cl.disabled%3D!0%2Cc.appendChild(l)%2Cs.forEach((e%2Ct)%3D>%7Bconst n%3Ddocument.createElement("option")%3Bn.value%3Dt%2B1%2Cn.textContent%3De%5B0%5D%7C%7C%60Baris %24%7Bt%2B1%7D%60%2Cd.forEach((t%2Co)%3D>%7Bn.dataset%5Bt%5D%3De%5Bo%5D%3F%3F""%7D)%2Cc.appendChild(n)%7D)%2Cc.onchange%3Dfunction()%7Bconst e%3Dthis.selectedOptions%5B0%5D.dataset%2Ct%3Ddocument.getElementById("simpanPD")%3BObject.keys(e).forEach(t%3D>%7Bconst n%3Di.value.trim()%7C%7C"name"%2Co%3D"class"%3D%3D%3Dn%3Fdocument.querySelector(%60.%24%7Bt%7D%60)%3A"id"%3D%3D%3Dn%3Fdocument.querySelector(%60%23%24%7Bt%7D%60)%3Adocument.querySelector(%60%5B%24%7Bn%7D%3D"%24%7Bt%7D"%5D%60)%3Bif(!o)return%3Bconst d%3DString(e%5Bt%5D).trim()%3Bif("SELECT"%3D%3D%3Do.tagName)%7Bo.removeAttribute("onchange")%2Co.onchange%3Dnull%3Blet e%3D%5B...o.options%5D.find(e%3D>e.textContent.trim().toLowerCase()%3D%3D%3Dd.toLowerCase()%7C%7CString(e.value).trim()%3D%3D%3Dd)%3Be%7C%7C(e%3Dnew Option(d%2Cd)%2Co.add(e))%2Co.value%3De.value%2Cwindow.jQuery%26%26jQuery(o).hasClass("select2-hidden-accessible")%26%26jQuery(o).trigger("change.select2")%7Delse o.value%3Dd%3Bo.dispatchEvent(new Event("input"%2C%7Bbubbles%3A!0%7D))%2Co.dispatchEvent(new Event("change"%2C%7Bbubbles%3A!0%7D))%7D)%2Ct%26%26(t.style.display%3D"block")%7D%2Cc.options.length%26%26(c.selectedIndex%3D0%2Cc.dispatchEvent(new Event("change")))%7D%2Ct.readAsArrayBuffer(e)%7D%7D)();`);
     };
 
     // ---> BKN
